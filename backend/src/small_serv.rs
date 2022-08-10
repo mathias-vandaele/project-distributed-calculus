@@ -11,7 +11,7 @@ pub(crate) fn warp(last_prime: Arc<Mutex<u128>>) {
             .with(cors);
 
         warp::serve(get)
-            .run(([127, 0, 0, 1], 3030))
+            .run(([0, 0, 0, 0], 3030))
             .await;
     })
 }

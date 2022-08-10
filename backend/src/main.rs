@@ -13,7 +13,7 @@ use crate::socket_manager::{Event};
 
 #[tokio::main]
 async fn main() {
-    let sm = socket_manager::SocketManager::start("127.0.0.1:7878");
+    let sm = socket_manager::SocketManager::start("0.0.0.0:7878");
     let mut id_worker_number_map: HashMap<u128, u128> = HashMap::new();
     let mut job: VecDeque<u128> = (0..10000).collect::<VecDeque<u128>>();
     let mut number_manager = Counter::new(10000);

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  front:
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    build:
+      context: ./frontend/
+    command: bash -c "cd app/frontend && trunk serve --release --address 0.0.0.0 --port=8181"
+    ports:
+       - "80:8181"
+
+  back:
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    build:
+      context: ./backend/
+    command: bash -c "cd app/backend && cargo run --release"
+    ports:
+      - "3030:3030"
+      - "7878:7878"
+
