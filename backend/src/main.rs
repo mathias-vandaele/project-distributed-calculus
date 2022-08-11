@@ -33,9 +33,10 @@ async fn main() {
 
     let sm = socket_manager::SocketManager::start(socket_addr);
     let mut id_worker_number_map: HashMap<u128, u128> = HashMap::new();
-    let mut job: VecDeque<u128> = (0..10000).collect::<VecDeque<u128>>();
-    let mut number_manager = Counter::new(10000);
+    let mut job: VecDeque<u128> = (1_000_000_000..1_000_010_000).collect::<VecDeque<u128>>();
+    let mut number_manager = Counter::new(1_000_010_000);
     let last_prime = Arc::new(Mutex::new(1));
+
 
 
     let warped = last_prime.clone();
