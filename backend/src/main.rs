@@ -3,17 +3,35 @@ extern crate core;
 mod socket_manager;
 mod counter;
 mod small_serv;
+mod config;
 
 use std::collections::{HashMap, VecDeque};
 use std::process::exit;
 use std::sync::{Arc, Mutex};
-use std::thread;
+use std::{env, process, thread};
+use crate::config::Config;
 use crate::counter::Counter;
 use crate::socket_manager::{Event};
 
 #[tokio::main]
 async fn main() {
-    let sm = socket_manager::SocketManager::start("0.0.0.0:7878");
+
+    let args : Vec<String> = env::args().collect();
+    let config = Config::new(&args).unwrap_or_else( |err| {
+        eprintln!("Problem parsing arguments : {}", err);
+        process::exit(1);
+    });
+
+    let mut socket_addr = config.ip.clone();
+    socket_addr.push_str(":7878");
+
+    let mut server_addr = config.ip.clone();
+    server_addr.push_str(":3030");
+
+    println!("socket server starting on : {}", socket_addr);
+    println!("http server starting on : {}", server_addr);
+
+    let sm = socket_manager::SocketManager::start(socket_addr);
     let mut id_worker_number_map: HashMap<u128, u128> = HashMap::new();
     let mut job: VecDeque<u128> = (0..10000).collect::<VecDeque<u128>>();
     let mut number_manager = Counter::new(10000);
@@ -21,7 +39,7 @@ async fn main() {
 
 
     let warped = last_prime.clone();
-    thread::spawn(move || small_serv::warp(warped));
+    thread::spawn(move || small_serv::warp(warped, server_addr));
 
     loop {
         let event = match sm.poll_event() {

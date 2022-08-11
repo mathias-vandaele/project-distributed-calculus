@@ -111,7 +111,7 @@ pub struct SocketManager {
 }
 
 impl SocketManager {
-    pub fn start(addr: &'static str) -> SocketManager {
+    pub fn start(addr: String) -> SocketManager {
         let (sender, receiver) = flume::unbounded();
         thread::Builder::new()
             .name("WebSocketManager".to_string())
@@ -125,7 +125,7 @@ impl SocketManager {
     }
 }
 
-fn handle_server(addr: &str, sender: Sender<Event>) {
+fn handle_server(addr: String, sender: Sender<Event>) {
     Runtime::new().expect("Could not start a new runtime").block_on(async {
         let listener = TcpListener::bind(addr.to_string()).await.expect("Failed to bind socket");
         let mut id_manager = Counter::new(0);

@@ -6,6 +6,7 @@ This is a proof of concept showing how to distribute calculus to a client via it
 ## Start the project
 
 ```shell
+source ./set_host_ip.sh 
 make up
 ```
 

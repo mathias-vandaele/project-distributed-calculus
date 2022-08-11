@@ -6,6 +6,7 @@ use crate::id_manager::IDManager;
 use crate::svg_manager::*;
 
 use std::collections::HashMap;
+use gloo_console::log;
 use yew::prelude::*;
 use gloo_worker::WorkerBridge;
 use gloo_worker::WorkerSpawner;
@@ -112,12 +113,13 @@ impl Component for App {
             Msg::GetLastPrime => {
                 let link = ctx.link().clone();
                 spawn_local(async move {
-                    let last_prime = Request::get("http://127.0.0.1:3030/last-prime").send().await.unwrap().text().await.unwrap().parse::<u128>().unwrap();
+                    let last_prime = Request::get(&*format!("http://{}:3030/last-prime", env!("HOST_IP"))).send().await.unwrap().text().await.unwrap().parse::<u128>().unwrap();
                     link.send_message(Msg::NewPrime(last_prime));
                     Timeout::new(1_000, move ||{
                         link.send_message(Msg::GetLastPrime);
                     }).forget();
                 });
+
                 true
             }
         }
