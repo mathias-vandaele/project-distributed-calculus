@@ -1,4 +1,5 @@
 use futures::{SinkExt, StreamExt};
+use gloo_console::log;
 use gloo_worker::{HandlerId, WorkerScope};
 use serde::{Deserialize, Serialize};
 use gloo_net::websocket::futures::WebSocket;

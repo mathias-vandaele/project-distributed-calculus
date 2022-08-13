@@ -6,7 +6,6 @@ use crate::id_manager::IDManager;
 use crate::svg_manager::*;
 
 use std::collections::HashMap;
-use gloo_console::log;
 use yew::prelude::*;
 use gloo_worker::WorkerBridge;
 use gloo_worker::WorkerSpawner;
