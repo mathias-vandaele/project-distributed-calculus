@@ -1,13 +1,12 @@
 # Distributed computing in rust
 
-This is a proof of concept showing how to distribute calculus to a client via its browser
+This is a proof of concept showing how to distribute calculus to a client via its browser; front and back are in rust
 
 
 ## Start the project
 
-```shell
-source ./set_host_ip.sh 
-make up
-```
+For now the docker-compose is built with a reverse-proxy in order to be secure.
+Some refactoring is necessary for the app to be deployed locally.
 
-Go to `127.0.0.1` using your browser
+You can try it out here : https://distributed-computing.mathias-vandaele.dev/#
+

@@ -5,3 +5,4 @@ frontend/target
 frontend/dist
 frontend/.DS_Store
 backend/.DS_Store
+letsencrypt/*
