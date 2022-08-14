@@ -112,7 +112,7 @@ impl Component for App {
             Msg::GetLastPrime => {
                 let link = ctx.link().clone();
                 spawn_local(async move {
-                    let last_prime = Request::get(&*format!("http://{}:3030/last-prime", env!("HOST_IP"))).send().await.unwrap().text().await.unwrap().parse::<u128>().unwrap();
+                    let last_prime = Request::get(&*format!("https://{}/last-prime", env!("HOST_IP"))).send().await.unwrap().text().await.unwrap().parse::<u128>().unwrap();
                     link.send_message(Msg::NewPrime(last_prime));
                     Timeout::new(1_000, move ||{
                         link.send_message(Msg::GetLastPrime);

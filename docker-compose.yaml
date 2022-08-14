@@ -1,6 +1,29 @@
 version: '3.8'
 
 services:
+
+  traefik:
+    image: "traefik:v2.8"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websocket.address=:7878"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=mathias.vandaele@protonmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "7878:7878"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
   front:
     volumes:
       - type: bind
@@ -9,10 +32,14 @@ services:
     build:
       context: ./frontend/
     command: bash -c "cd app/frontend && trunk serve --release --address 0.0.0.0 --port=8181"
-    ports:
-       - "80:8181"
     environment:
       - HOST_IP=${HOST_IP}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.front.rule=Host(`distributed-computing.mathias-vandaele.dev`)"
+      - "traefik.http.routers.front.entrypoints=websecure"
+      - "traefik.http.routers.front.tls.certresolver=myresolver"
+      - "traefik.http.services.front.loadbalancer.server.port=8181"
 
   back:
     volumes:
@@ -22,7 +49,17 @@ services:
     build:
       context: ./backend/
     command: bash -c "cd app/backend && cargo run --release 0.0.0.0"
-    ports:
-      - "3030:3030"
-      - "7878:7878"
+    labels:
+      - "traefik.enable=true"
 
+      - "traefik.http.routers.httpserv.rule=Host(`distributed-computing.mathias-vandaele.dev`) && Path(`/last-prime`)"
+      - "traefik.http.routers.httpserv.service=httpserv"
+      - "traefik.http.routers.httpserv.entrypoints=websecure"
+      - "traefik.http.routers.httpserv.tls.certresolver=myresolver"
+      - "traefik.http.services.httpserv.loadbalancer.server.port=3030"
+
+      - "traefik.http.routers.socket.rule=Host(`distributed-computing.mathias-vandaele.dev`)"
+      - "traefik.http.routers.socket.service=socket"
+      - "traefik.http.routers.socket.entrypoints=websocket"
+      - "traefik.http.routers.socket.tls.certresolver=myresolver"
+      - "traefik.http.services.socket.loadbalancer.server.port=7878"

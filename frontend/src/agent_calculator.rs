@@ -40,7 +40,7 @@ impl gloo_worker::Worker for Calculator {
 
     fn received(&mut self, scope: &WorkerScope<Self>, msg: Self::Input, id: HandlerId) {
         let scope_clone = scope.clone();
-        match WebSocket::open(&*("ws://".to_owned() + env!("HOST_IP") + ":7878")) {
+        match WebSocket::open(&*("wss://".to_owned() + env!("HOST_IP") + ":7878")) {
             Ok(mut ws) => {
                 spawn_local(async move {
                     while let Some(message) = ws.next().await {
